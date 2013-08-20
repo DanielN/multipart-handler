@@ -64,7 +64,7 @@ class PartInputStream extends InputStream {
 					}
 				}
 				// Skip to end of line
-				while (c > 0 && c != '\r' && c != '\n') {
+				while (c >= 0 && c != '\r' && c != '\n') {
 					c = stream.read();
 				}
 				// handle CRLF as well as just CR
@@ -83,6 +83,10 @@ class PartInputStream extends InputStream {
 			// It wasn't a boundary after all, rewind to the previous state...
 			stream.reset();
 			c = saved;
+		} else if (c < 0) {
+			// End of file without boundary
+			endOfPart = true;
+			lastPart = true;
 		}
 		atStart = false;
 		return c;

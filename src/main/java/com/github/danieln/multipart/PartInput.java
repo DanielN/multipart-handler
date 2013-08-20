@@ -97,7 +97,7 @@ public class PartInput {
 			// No headers
 			return;
 		}
-		mainloop: while (c > 0) {
+		mainloop: while (c >= 0) {
 			switch (c) {
 				case ':':
 					if (inKey) {

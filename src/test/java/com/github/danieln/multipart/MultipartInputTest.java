@@ -124,4 +124,28 @@ public class MultipartInputTest extends TestCase {
 		part = mpm.nextPart();
 		assertNull("Next part", part);
 	}
+
+	public void testMultipartMessageEOF() throws IOException {
+		String message = "--qwerty\r\n"
+			+ "Content-Type: text/plain\r\n"
+			+ "Content-Length: 14\r\n"
+			+ "\r\n"
+			+ "This is a test";	// EOF without boundary
+		InputStream stream = new ByteArrayInputStream(message.getBytes("US-ASCII"));
+		MultipartInput mpm = new MultipartInput(stream, "multipart/mixed;boundary=qwerty");
+		PartInput part = mpm.nextPart();
+		assertNotNull("First part", part);
+		InputStream in = part.getInputStream();
+		assertNotNull("Part 1 stream", in);
+		byte[] buf = new byte[14];
+		int n = in.read(buf);
+		assertEquals("Stream 1 length", 14, n);
+		assertTrue("Stream 1 content", "This is a test".equals(new String(buf, "US-ASCII")));
+		n = in.read();
+		assertEquals("Stream 1 end", -1, n);
+
+		part = mpm.nextPart();
+		assertNull("Next part", part);
+	}
+
 }
